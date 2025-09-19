@@ -1,0 +1,80 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+
+// Enum for negotiation status
+/*export enum NegotiateStatus {
+  PENDING = 'pending',
+  ACCEPTED = 'accepted',
+  REJECTED = 'rejected',
+  CANCELLED = 'cancelled',
+}*/
+
+enum NegotiateStatus {
+     pending
+     accepted
+     rejected
+     cancelled
+   }
+
+model Load {
+  id                String   @id @default(uuid())
+  origin            String
+  originLat         Float?   // latitude for geo queries
+  originLng         Float?   // longitude for geo queries
+  destination       String
+  destinationLat    Float?   // latitude for delivery proximity checks
+  destinationLng    Float?   // longitude for delivery proximity checks
+  pickup_datetime   DateTime
+  delivery_datetime DateTime
+  equipment_type    String
+  loadboard_rate    Float
+  notes             String
+  weight            Float
+  commodity_type    String
+  num_of_pieces     Int
+  miles             Float
+  dimensions        String
+
+
+  negotiations      Negotiation[]
+
+  @@index([origin, destination, pickup_datetime, equipment_type], name:"idx_load_match")
+}
+
+
+model Negotiation {
+  id                 String            @id @default(uuid())
+  loadId             String
+  mcNumber           String
+  currentRound       Int               @default(0)
+  carrierLastProposed Float?           // carrier's most recent proposed rate
+  serverLastProposed  Float?           // server's most recent counter-offer
+  agreedRate          Float?           // final agreed rate when accepted
+  status             NegotiateStatus @default(pending)
+  createdAt          DateTime          @default(now())
+  updatedAt          DateTime          @updatedAt
+
+  load               Load              @relation(fields: [loadId], references: [id])
+}
+
+model CallLog {
+  id           String   @id @default(uuid())
+  mcNumber     String   
+  loadId       String?  
+  outcome      String   
+  sentiment    String   // sentiment classification 
+  agreedRate   Float?   // final agreed rate, if accepted
+  rounds       Int?     // number of negotiation rounds
+  transcript   String?  // full transcript text or external transcript ID 
+  createdAt    DateTime @default(now())
+}
