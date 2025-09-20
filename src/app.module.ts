@@ -5,6 +5,7 @@ import { VerifyModule } from './verify/verify.module';
 import { ConfigModule } from '@nestjs/config';
 import { LoadsModule } from './loads/loads.module';
 import { NegotiateModule } from './negotiate/negotiate.module';
+import { HealthController } from './health/health.controller';
 
 @Module({
   imports: [
@@ -15,7 +16,7 @@ import { NegotiateModule } from './negotiate/negotiate.module';
       isGlobal: true,
     }),
   ],
-  controllers: [AppController],
+  controllers: [AppController, HealthController],
   providers: [AppService],
 })
 export class AppModule {}
