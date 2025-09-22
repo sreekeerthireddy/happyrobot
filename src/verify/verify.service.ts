@@ -1,14 +1,19 @@
 // no exceptions thrown; unified return style
+
+import { PrismaClient } from '@prisma/client';
 import { VerifyReq, VerifyRes } from './verfiy.dto';
 import axios from 'axios';
 
 export class VerifyService {
+  private prisma = new PrismaClient();
+
   async verifyMc(request: VerifyReq): Promise<VerifyRes> {
     try {
       const { mc } = request;
       if (!mc) {
         throw new Error('MC is required');
       }
+
       const baseUrl =
         'https://mobile.fmcsa.dot.gov/qc/services/carriers/docket-number/';
       const webKey = process.env.FMCSA_WEBKEY ?? '';
@@ -19,6 +24,7 @@ export class VerifyService {
       if (!carrier) {
         throw new Error('Carrier data not found');
       }
+
       return {
         status: true,
         data: {

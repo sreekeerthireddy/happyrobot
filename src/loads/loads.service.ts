@@ -108,6 +108,7 @@ export class LoadsService {
           message: 'No load found with the given criteria',
         };
       }
+
       // Map Prisma Load record to API-friendly DTO
       const best = scored[0].load;
       return {
