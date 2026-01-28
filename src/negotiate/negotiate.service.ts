@@ -15,6 +15,8 @@ export class NegotiateService {
   // Carrier’s first counter-offer starts or accepts immediately
   async makeNegotiation(request: NegotiateReq): Promise<NegotiateRes> {
     try {
+
+      console.log('makeNegotiation request is...', request);
       const { loadId, mcNumber, proposedRate } = request;
       // 1. Validate load exists
       const load = await this.prisma.load.findUnique({ where: { id: loadId } });
